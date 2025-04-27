@@ -1,0 +1,6 @@
+symbols:
+  - DOGE/USDT
+  - PEPE/USDT
+sentiment_threshold: 0.6
+slippage_limit: 1.5
+hold_period: 1h

@@ -1,0 +1,6 @@
+tweepy
+praw
+python-dotenv
+pandas
+schedule
+requests
