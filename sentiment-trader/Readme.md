@@ -56,29 +56,93 @@ Services launched:
 - Trade execution bot
 - PostgreSQL database
 
-4. **Access Dashboard**
+## 📡 Live Data Collection (collector/)
+- `reddit_scraper.py`: Pulls latest posts mentioning top 10 memecoins from Reddit subreddits like r/cryptocurrency, r/dogecoin.
+- `twitter_scraper.py`: Pulls tweets mentioning $COIN or #COIN using Tweepy (Twitter API v2).
+- **Stored fields**: text, created_at, retweets, likes.
+- **Output**: Saves structured `.csv` files every 15 minutes.
 
-Visit `http://localhost:8501` for live monitoring!
+## 🧠 Sentiment Analysis (backend/)
+- `app.py`: FastAPI app that loads a MemeBERT model.
+- When collector scrapes new data, the backend scores each text as positive/neutral/negative sentiment.
+- Output is a **sentiment score** (-1 to +1) per post/tweet.
 
+## 📈 Feature Engineering + Prediction (signals/)
+- `features.py`: Merges technical indicators (RSI, MACD, OBV) with sentiment averages.
+- `predictor.py`: Loads trained XGBoost or LSTM model to predict next move:
+  - **BUY** → if expected price increase
+  - **SELL** → if expected price decrease
 
-## 📚 How it Works
+## 🛒 Trade Execution (executor/)
+- `trader.py`: Connects to Binance (or any CEX) using ccxt.
+- `strategy.py`: Defines trading rule: Buy if prediction is BUY, Sell if SELL.
+- Executes real trades (or can simulate in paper trading mode).
 
-- **Collectors** scrape posts/tweets mentioning top meme coins (DOGE, PEPE, etc.)
-- **Backend** scores posts in real-time using MemeBERT model
-- **Signals** combines sentiment + technical indicators to predict next move
-- **Executor** places trades based on signals
-- **Database** stores sentiment, features, trades
-- **Dashboard** visualizes PnL, trades, and signals
+## 🛢️ Data Storage (database/)
+- PostgreSQL container stores:
+  - Raw Reddit/Twitter text and sentiment
+  - Signals generated
+  - Executed trades (including PnL)
 
-## 🚀 Extend Ideas
+## 📊 Backtesting Framework (backtest/)
+- `backtest_runner.py`: Replays historical price and sentiment data.
+- `metrics.py`: Computes Sharpe ratio, Max drawdown, Win rate.
+- `plots.py`: Graphs cumulative PnL curve.
 
-- Fine-tune MemeBERT on crypto slang
-- Add orderbook flow features (depth imbalance)
-- Dynamic position sizing based on sentiment strength
-- Add real-time Google Trends signal
+## 📺 Real-Time Monitoring (dashboard/)
+- Streamlit dashboard visualizes:
+  - Current open positions
+  - Last sentiment scores
+  - Trade history and live PnL performance
+
+## ✅ Unit Testing (tests/)
+- Placeholder tests (`test_collector.py`, etc.) ready to expand.
+- Run with `pytest` to ensure pipeline stability.
 
 ---
 
-Feel free to contribute, fork, or ask questions!
+# ⚡ How It Flows End-to-End
+
+1. **Collectors** pull tweets/posts every 15 min.
+2. **Backend** (FastAPI) scores sentiment via MemeBERT.
+3. **Signals** combine features (sentiment + TA) → predict BUY/SELL.
+4. **Executor** places live trades on Binance (or paper trades).
+5. **Database** logs everything.
+6. **Dashboard** shows live system status and performance.
+
+---
+
+# 🚀 How to Run This Project
+
+### 1. Clone the Repo
+```bash
+git clone https://github.com/your-username/sentiment-trader.git
+cd sentiment-trader
+```
+
+### 2. Setup Secrets (.env)
+Provide API keys for:
+- Binance
+- Reddit
+- Twitter
+- PostgreSQL credentials
+
+### 3. Launch All Services
+```bash
+docker-compose up --build
+```
+
+### 4. Access:
+- API Docs: `http://localhost:8000/docs`
+- Dashboard: `http://localhost:8501`
+
+---
+
+# 🔥 Future Extensions
+- Dynamic trade sizing by confidence score
+- Integrate Google Trends & Discord mentions
+- Deploy to AWS / GCP for production uptime
+
 
 **Built for serious alpha hunting. 🧠🚀**
+
